@@ -49,8 +49,10 @@ gradle/
 */.DS_Store
 .DS_Store
 */.idea/
-.idea/
+.idea/*
+.idea/*.xml
 gradlew
 gradlew.bat
 unused.txt
 .jar
+.xml
