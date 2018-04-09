@@ -23,7 +23,6 @@ import java.util.Locale
 import scala.collection.JavaConverters._
 import scala.util.Try
 import scala.util.control.NonFatal
-
 import org.apache.spark.TaskContext
 import org.apache.spark.executor.InputMetrics
 import org.apache.spark.internal.Logging
@@ -42,6 +41,21 @@ import org.apache.spark.util.NextIterator
  * Util functions for JDBC tables.
  */
 object JdbcUtils extends Logging {
+
+
+  def createClickhouseConnectionFactory(part:ClickhousePartition,driverClass : String ): () => Connection = {
+    () => {
+      DriverRegistry.register(driverClass)
+      val driver: Driver = DriverManager.getDrivers.asScala.collectFirst {
+        case d: DriverWrapper if d.wrapped.getClass.getCanonicalName == driverClass => d
+        case d if d.getClass.getCanonicalName == driverClass => d
+      }.getOrElse {
+        throw new IllegalStateException(
+          s"Did not find registered driver with class $driverClass")
+      }
+      driver.connect(part.url, new java.util.Properties() )
+    }
+  }
   /**
    * Returns a factory for creating connections to the given JDBC URL.
    *
@@ -807,4 +821,6 @@ object JdbcUtils extends Logging {
       statement.close()
     }
   }
+
+
 }

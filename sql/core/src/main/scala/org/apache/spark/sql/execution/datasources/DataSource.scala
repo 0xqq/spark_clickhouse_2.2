@@ -22,9 +22,7 @@ import java.util.{Locale, ServiceConfigurationError, ServiceLoader}
 import scala.collection.JavaConverters._
 import scala.language.{existentials, implicitConversions}
 import scala.util.{Failure, Success, Try}
-
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql._
@@ -39,7 +37,7 @@ import org.apache.spark.sql.execution.streaming._
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.streaming.OutputMode
 import org.apache.spark.sql.types.{CalendarIntervalType, StructType}
-import org.apache.spark.sql.util.SchemaUtils
+import org.apache.spark.sql.util.{SchemaUtils, StackPrint}
 import org.apache.spark.util.Utils
 
 /**
@@ -520,6 +518,8 @@ object DataSource extends Logging {
 
   /** Given a provider name, look up the data source class definition. */
   def lookupDataSource(provider: String): Class[_] = {
+    StackPrint.stackPrint()
+    logInfo("## : data source :" + provider)
     val provider1 = backwardCompatibilityMap.getOrElse(provider, provider)
     val provider2 = s"$provider1.DefaultSource"
     val loader = Utils.getContextOrSparkClassLoader
