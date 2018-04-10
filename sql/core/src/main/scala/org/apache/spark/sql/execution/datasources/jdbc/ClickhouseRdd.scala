@@ -59,11 +59,13 @@ object ClickhouseRDD extends Logging {
     val url = options.url
     val table = options.table
     val dialect = JdbcDialects.get(url)
-    val conn: Connection = JdbcUtils.createConnectionFactory(options)()
+    //val conn: Connection = JdbcUtils.createConnectionFactory(options)()
+    val conn: Connection = JdbcUtils.createClickhouseConnectionFactory(options.url)()
     try {
       val statement = conn.prepareStatement(dialect.getSchemaQuery(table))
       try {
         val rs = statement.executeQuery()
+        //logInfo("** rs size :" + rs.getRow)
         try {
           JdbcUtils.getSchema(rs, dialect)
         } finally {
@@ -256,7 +258,7 @@ private[jdbc] class ClickhouseRDD(
   }
   */
   def getConnection(part : ClickhousePartition)  = {
-    JdbcUtils.createClickhouseConnectionFactory(part,"ru.yandex.clickhouse.ClickHouseDriver")
+    JdbcUtils.createClickhouseConnectionFactory(part.url,"ru.yandex.clickhouse.ClickHouseDriver")
   }
   override def compute(thePart: Partition, context: TaskContext): Iterator[InternalRow] = {
     var closed = false

@@ -111,7 +111,7 @@ abstract class JdbcDialect extends Serializable {
    */
   @Since("2.1.0")
   def getSchemaQuery(table: String): String = {
-    s"SELECT * FROM $table WHERE 1=0"
+    s"SELECT * FROM $table WHERE 1=0 limit 1"
   }
 
   /**

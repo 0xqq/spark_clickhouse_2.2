@@ -184,13 +184,25 @@ class DataFrameReader private[sql](sparkSession: SparkSession) extends Logging {
    *
    * @since 1.4.0
    */
-  def jdbc(url: String, table: String, properties: Properties): DataFrame = {
-    assertNoSpecifiedSchema("jdbc")
+  def jdbc(url: String, table: String, properties: Properties ): DataFrame = {
+    //assertNoSpecifiedSchema("jdbc")
     // properties should override settings in extraOptions.
     this.extraOptions ++= properties.asScala
     // explicit url and dbtable should override all
     this.extraOptions += (JDBCOptions.JDBC_URL -> url, JDBCOptions.JDBC_TABLE_NAME -> table)
     format("jdbc").load()
+  }
+
+  def jdbc(url: String, table: String, properties: Properties  ,clickhouse : Boolean): DataFrame = {
+    //assertNoSpecifiedSchema("jdbc")
+    // properties should override settings in extraOptions.
+    this.extraOptions ++= properties.asScala
+    // explicit url and dbtable should override all
+    this.extraOptions += (JDBCOptions.JDBC_URL -> url, JDBCOptions.JDBC_TABLE_NAME -> table)
+    if(!clickhouse)
+      format("jdbc").load()
+    else
+      format("clickhouse").load()
   }
 
   /**

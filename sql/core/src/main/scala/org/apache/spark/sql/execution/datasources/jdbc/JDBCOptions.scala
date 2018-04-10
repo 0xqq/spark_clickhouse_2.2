@@ -70,6 +70,10 @@ class JDBCOptions(
   // name of table
   val table = parameters(JDBC_TABLE_NAME)
 
+  val clickhouseIps = parameters(JDBC_CLICKHOUSE_IP).split(",")
+  val clickhouseJdbcPort = parameters(JDBC_CLICKHOUSE_JDBC_PORT)
+  val clickhouseDb = parameters(JDBC_CLICKHOUSE_DB)
+
   // ------------------------------------------------------------
   // Optional parameters
   // ------------------------------------------------------------
@@ -158,4 +162,8 @@ object JDBCOptions {
   val JDBC_CREATE_TABLE_COLUMN_TYPES = newOption("createTableColumnTypes")
   val JDBC_BATCH_INSERT_SIZE = newOption("batchsize")
   val JDBC_TXN_ISOLATION_LEVEL = newOption("isolationLevel")
+
+  val JDBC_CLICKHOUSE_IP = newOption("clickhouseIp")
+  val JDBC_CLICKHOUSE_JDBC_PORT = newOption("clickhouseJdbcPort")
+  val JDBC_CLICKHOUSE_DB = newOption("clickhouseDb")
 }

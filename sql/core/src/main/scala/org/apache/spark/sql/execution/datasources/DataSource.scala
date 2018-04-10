@@ -518,13 +518,16 @@ object DataSource extends Logging {
 
   /** Given a provider name, look up the data source class definition. */
   def lookupDataSource(provider: String): Class[_] = {
-    StackPrint.stackPrint()
+    //StackPrint.stackPrint()
     logInfo("## : data source :" + provider)
+    logInfo("## : value of org.apache.spark.sql.jdbc:" + backwardCompatibilityMap.getOrElse("org.apache.spark.sql.jdbc","null"))
     val provider1 = backwardCompatibilityMap.getOrElse(provider, provider)
     val provider2 = s"$provider1.DefaultSource"
     val loader = Utils.getContextOrSparkClassLoader
     val serviceLoader = ServiceLoader.load(classOf[DataSourceRegister], loader)
 
+    logInfo("## : provider1  :" + provider1)
+    serviceLoader.asScala.map( v => logInfo("DataSourceRegister : " +  v.shortName()) )
     try {
       serviceLoader.asScala.filter(_.shortName().equalsIgnoreCase(provider1)).toList match {
         // the provider format did not match any given registered aliases
@@ -565,6 +568,7 @@ object DataSource extends Logging {
           }
         case head :: Nil =>
           // there is exactly one registered alias
+          logInfo("## serviceLoader find datasource:" + provider1)
           head.getClass
         case sources =>
           // There are multiple registered aliases for the input. If there is single datasource

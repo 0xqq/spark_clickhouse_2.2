@@ -43,7 +43,7 @@ import org.apache.spark.util.NextIterator
 object JdbcUtils extends Logging {
 
 
-  def createClickhouseConnectionFactory(part:ClickhousePartition,driverClass : String ): () => Connection = {
+  def createClickhouseConnectionFactory(url:String,driverClass : String = "ru.yandex.clickhouse.ClickHouseDriver" ): () => Connection = {
     () => {
       DriverRegistry.register(driverClass)
       val driver: Driver = DriverManager.getDrivers.asScala.collectFirst {
@@ -53,7 +53,7 @@ object JdbcUtils extends Logging {
         throw new IllegalStateException(
           s"Did not find registered driver with class $driverClass")
       }
-      driver.connect(part.url, new java.util.Properties() )
+      driver.connect(url, new java.util.Properties() )
     }
   }
   /**
@@ -303,6 +303,8 @@ object JdbcUtils extends Logging {
         dialect.getCatalystType(dataType, typeName, fieldSize, metadata).getOrElse(
           getCatalystType(dataType, fieldSize, fieldScale, isSigned))
       fields(i) = StructField(columnName, columnType, nullable, metadata.build())
+      logInfo("========")
+      logInfo("columnName :" + columnName + ", columnType :" + columnType)
       i = i + 1
     }
     new StructType(fields)
